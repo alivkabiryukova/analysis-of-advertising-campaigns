@@ -27,6 +27,9 @@ left join sessions as s
     on
         t.visitor_id = s.visitor_id
         and t.visit_date = s.visit_date
-left join leads as l on t.visitor_id = l.visitor_id
+left join leads as l
+    on
+        t.visitor_id = l.visitor_id
+        and s.visit_date <= l.created_at
 order by 8 desc nulls last, 2, 3, 4, 5
 limit 10;
