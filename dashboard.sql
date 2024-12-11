@@ -39,20 +39,21 @@ with tab1 as (
         l.amount,
         to_char(s.visit_date, 'YYYY-MM-DD') as visit_date,
         row_number()
-            over (
-                partition by s.visitor_id
-                order by s.visit_date desc
-            )
+        over (
+            partition by s.visitor_id
+            order by s.visit_date desc
+        )
         as row_date
     from sessions as s
     left join leads as l
         on
             s.visitor_id = l.visitor_id
             and s.visit_date <= l.created_at
-    where s.medium in (
-        'cpc', 'cpm',
-        'cpa', 'youtube', 'cpp', 'tg', 'social'
-    )
+    where
+        s.medium in (
+            'cpc', 'cpm',
+            'cpa', 'youtube', 'cpp', 'tg', 'social'
+        )
 ),
 
 tab2 as (
@@ -90,8 +91,8 @@ select
     source,
     count(distinct visitor_id) as count_visitor
 from sessions
-group by 1
-order by 2 desc
+group by source
+order by count(distinct visitor_id) desc
 limit 5;
 
 --ФИНАНСОВЫЕ МЕТРИКИ
@@ -132,7 +133,8 @@ tab2 as (
 select sum(amount) - (select t.total_cost from tab2 as t) as result
 from leads;
 
--- метрики (общие, на основе aggregate_last_paid_click, без ограничения в 15 строк)
+-- метрики (общие, на основе aggregate_last_paid_click)
+-- без ограничения в 15 строк
 select
     round(sum(total_cost) / sum(visitors_count), 2) as cpu,
     round(sum(total_cost) / sum(leads_count), 2) as cpl,
@@ -140,7 +142,8 @@ select
     round((sum(revenue) - sum(total_cost)) / sum(total_cost), 2) as roi
 from cost_calculation;
 
--- метрики (по каналам, на основе aggregate_last_paid_click, без ограничения в 15 строк)
+-- метрики (по каналам, на основе aggregate_last_paid_click)
+-- без ограничения в 15 строк
 select
     utm_source,
     round(sum(total_cost) / sum(visitors_count), 2) as cpu,
@@ -161,7 +164,7 @@ with tab1 as (
             'cpc', 'cpm',
             'cpa', 'youtube', 'cpp', 'tg', 'social'
         )
-    group by 1
+    group by visitor_id
 ),
 
 tab2 as (
