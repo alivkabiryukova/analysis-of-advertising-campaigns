@@ -11,7 +11,8 @@ with tab1 as (
             partition by s.visitor_id
             order by s.visit_date desc
         )
-        as row_date
+        as row_date,
+        lead_id
     from sessions as s
     left join leads as l
         on
@@ -27,10 +28,7 @@ tab2 as (
         utm_medium,
         utm_campaign,
         count(*) as visitors_count,
-        count(status_id) filter (
-            where status_id is not null
-        )
-        as leads_count,
+        count(lead_id) as leads_count,
         count(status_id) filter (
             where status_id = 142
         )

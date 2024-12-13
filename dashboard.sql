@@ -259,18 +259,27 @@ group by utm_source;
 -- сколько дней необходимо для закрытия 90% лидов
 with tab as (
     select
-        visitor_id,
-        max(visit_date) as visit_date
-    from sessions
-    where medium != 'organic'
-    group by visitor_id
+        s.visit_date,
+        l.created_at,
+        row_number()
+        over (
+            partition by s.visitor_id
+            order by s.visit_date desc
+        )
+        as row_date
+    from sessions as s
+    left join leads as l
+        on
+            s.visitor_id = l.visitor_id
+            and s.visit_date <= l.created_at
+    where s.medium != 'organic'
 )
 
 select
     percentile_cont(0.9) within group (
         order by
-            date_part('day', l.created_at::timestamp - t.visit_date::timestamp)
+            date_part('day', created_at::timestamp - visit_date::timestamp)
     )
     as days_to_90_close
-from tab as t
-left join leads as l on t.visitor_id = l.visitor_id;
+from tab
+where row_date = 1;
