@@ -3,6 +3,7 @@ with tab1 as (
         s.source as utm_source,
         s.medium as utm_medium,
         s.campaign as utm_campaign,
+        l.lead_id,
         l.status_id,
         l.amount,
         to_char(s.visit_date, 'YYYY-MM-DD') as visit_date,
@@ -11,8 +12,7 @@ with tab1 as (
             partition by s.visitor_id
             order by s.visit_date desc
         )
-        as row_date,
-        lead_id
+        as row_date
     from sessions as s
     left join leads as l
         on
