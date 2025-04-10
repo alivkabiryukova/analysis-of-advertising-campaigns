@@ -27,7 +27,7 @@
 🔹 Даны рекомендации по оптимизации
 
 ## Как запустить проект
-git clone https://github.com/ohalivka/analysis-of-advertising-campaigns.git
+git clone https://github.com/alivkabiryukova/analysis-of-advertising-campaigns.git
 
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/ohalivka/data-analytics-project-96/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/ohalivka/data-analytics-project-96/actions)
